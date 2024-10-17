@@ -1,3 +1,15 @@
+## Swagger API 캡처본
+
+---
+![image](https://github.com/user-attachments/assets/70e91097-1924-4039-8fd5-296accb25925)
+![image](https://github.com/user-attachments/assets/0979234a-85d4-401d-a859-3f70665f924f)
+![image](https://github.com/user-attachments/assets/427e469f-b9cb-4a2c-b562-b6aaa3c5b5ec)
+![image](https://github.com/user-attachments/assets/5179895c-ee3c-4e02-97f2-7842a4c8cf3e)
+![image](https://github.com/user-attachments/assets/199774ed-9e8c-4ebb-9352-b50d22e22405)
+![image](https://github.com/user-attachments/assets/5f983d80-453d-4b45-9c74-0ce53d697861)
+![image](https://github.com/user-attachments/assets/ff1e1362-c357-4057-b475-4a1ccc96471a)
+![image](https://github.com/user-attachments/assets/f174b8f6-81e0-40b2-b7ac-3d5aba7843b7)
+
 ## 마일스톤
 
 ---
