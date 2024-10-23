@@ -1,11 +1,11 @@
 package hhplus.concertreservation;
 
-import hhplus.concertreservation.application.service.*;
-import hhplus.concertreservation.domain.constant.PaymentStatus;
-import hhplus.concertreservation.domain.constant.ReservationStatus;
-import hhplus.concertreservation.domain.dto.QueryQueueDto;
-import hhplus.concertreservation.domain.entity.*;
-import hhplus.concertreservation.domain.repository.ReservationRepository;
+import hhplus.concertreservation.app.application.service.*;
+import hhplus.concertreservation.app.domain.constant.PaymentStatus;
+import hhplus.concertreservation.app.domain.constant.ReservationStatus;
+import hhplus.concertreservation.app.domain.dto.QueryQueueDto;
+import hhplus.concertreservation.app.domain.entity.*;
+import hhplus.concertreservation.app.domain.repository.ReservationRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

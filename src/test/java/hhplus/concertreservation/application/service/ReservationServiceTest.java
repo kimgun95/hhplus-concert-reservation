@@ -1,11 +1,14 @@
 package hhplus.concertreservation.application.service;
 
-import hhplus.concertreservation.domain.constant.ReservationStatus;
-import hhplus.concertreservation.domain.constant.SeatStatus;
-import hhplus.concertreservation.domain.entity.Queue;
-import hhplus.concertreservation.domain.entity.Reservation;
-import hhplus.concertreservation.domain.entity.Seat;
-import hhplus.concertreservation.domain.repository.ReservationRepository;
+import hhplus.concertreservation.app.application.service.QueueService;
+import hhplus.concertreservation.app.application.service.ReservationService;
+import hhplus.concertreservation.app.application.service.SeatService;
+import hhplus.concertreservation.app.domain.constant.ReservationStatus;
+import hhplus.concertreservation.app.domain.constant.SeatStatus;
+import hhplus.concertreservation.app.domain.entity.Queue;
+import hhplus.concertreservation.app.domain.entity.Reservation;
+import hhplus.concertreservation.app.domain.entity.Seat;
+import hhplus.concertreservation.app.domain.repository.ReservationRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;

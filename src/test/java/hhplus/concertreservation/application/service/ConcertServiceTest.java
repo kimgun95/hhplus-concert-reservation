@@ -1,7 +1,8 @@
 package hhplus.concertreservation.application.service;
 
-import hhplus.concertreservation.domain.entity.Concert;
-import hhplus.concertreservation.domain.repository.ConcertRepository;
+import hhplus.concertreservation.app.application.service.ConcertService;
+import hhplus.concertreservation.app.domain.entity.Concert;
+import hhplus.concertreservation.app.domain.repository.ConcertRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
