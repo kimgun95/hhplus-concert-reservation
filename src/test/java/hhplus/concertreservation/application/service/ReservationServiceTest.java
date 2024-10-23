@@ -1,19 +1,21 @@
 package hhplus.concertreservation.application.service;
 
-import hhplus.concertreservation.app.application.service.QueueService;
 import hhplus.concertreservation.app.application.service.ReservationService;
-import hhplus.concertreservation.app.application.service.SeatService;
 import hhplus.concertreservation.app.domain.constant.ReservationStatus;
 import hhplus.concertreservation.app.domain.constant.SeatStatus;
 import hhplus.concertreservation.app.domain.entity.Queue;
 import hhplus.concertreservation.app.domain.entity.Reservation;
 import hhplus.concertreservation.app.domain.entity.Seat;
+import hhplus.concertreservation.app.domain.repository.QueueRepository;
 import hhplus.concertreservation.app.domain.repository.ReservationRepository;
+import hhplus.concertreservation.app.domain.repository.SeatRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -29,10 +31,10 @@ class ReservationServiceTest {
     private ReservationRepository reservationRepository;
 
     @Mock
-    private SeatService seatService;
+    private SeatRepository seatRepository;
 
     @Mock
-    private QueueService queueService;
+    private QueueRepository queueRepository;
 
     @BeforeEach
     void setUp() {
@@ -54,8 +56,8 @@ class ReservationServiceTest {
                 .seatStatus(SeatStatus.AVAILABLE)
                 .build();
 
-        when(seatService.getSeat(concertId, seatNumber)).thenReturn(seat);
-        when(queueService.getQueueByToken(token)).thenReturn(queue);
+        when(seatRepository.findByConcertIdAndSeatNumber(concertId, seatNumber)).thenReturn(Optional.of(seat));
+        when(queueRepository.findByToken(token)).thenReturn(Optional.of(queue));
         when(reservationRepository.save(any(Reservation.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         Reservation result = sut.reserveSeat(token, concertId, seatNumber);
@@ -75,7 +77,7 @@ class ReservationServiceTest {
         Seat seat = new Seat();
         seat.changeStatus(SeatStatus.RESERVED);
 
-        when(seatService.getSeat(concertId, seatNumber)).thenReturn(seat);
+        when(seatRepository.findByConcertIdAndSeatNumber(concertId, seatNumber)).thenReturn(Optional.of(seat));
 
         assertThrows(RuntimeException.class, () -> {
             sut.reserveSeat(token, concertId, seatNumber);
@@ -90,8 +92,8 @@ class ReservationServiceTest {
 
         Seat seat = new Seat();
 
-        when(seatService.getSeat(concertId, seatNumber)).thenReturn(seat);
-        when(queueService.getQueueByToken(token)).thenThrow(new RuntimeException("대기열을 찾을 수 없습니다"));
+        when(seatRepository.findByConcertIdAndSeatNumber(concertId, seatNumber)).thenReturn(Optional.of(seat));
+        when(queueRepository.findByToken(token)).thenThrow(new RuntimeException("대기열을 찾을 수 없습니다"));
 
         assertThrows(RuntimeException.class, () -> {
             sut.reserveSeat(token, concertId, seatNumber);

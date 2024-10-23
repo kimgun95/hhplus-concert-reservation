@@ -1,7 +1,11 @@
 package hhplus.concertreservation.application.service;
 
 import hhplus.concertreservation.app.application.service.UsersService;
+import hhplus.concertreservation.app.domain.entity.Ledger;
+import hhplus.concertreservation.app.domain.entity.Queue;
 import hhplus.concertreservation.app.domain.entity.Users;
+import hhplus.concertreservation.app.domain.repository.LedgerRepository;
+import hhplus.concertreservation.app.domain.repository.QueueRepository;
 import hhplus.concertreservation.app.domain.repository.UsersRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -11,13 +15,16 @@ import org.mockito.MockitoAnnotations;
 
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class UsersServiceTest {
 
-    @Mock
-    private UsersRepository usersRepository;
+    @Mock private UsersRepository usersRepository;
+    @Mock private QueueRepository queueRepository;
+    @Mock private LedgerRepository ledgerRepository;
 
     @InjectMocks
     private UsersService sut;
@@ -28,24 +35,43 @@ class UsersServiceTest {
     }
 
     @Test
-    void 존재하지않는유저를조회시_예외발생() {
+    void 포인트충전성공시_원장생성() {
+        String token = "some-token";
+        Long amount = 100L;
         Long userId = 1L;
-        when(usersRepository.findById(userId)).thenReturn(Optional.empty());
 
-        assertThrows(RuntimeException.class, () -> {
-            sut.getUserByUserId(userId);
-        });
+        Queue queue = Queue.create(userId);
+        Users user = Users.builder()
+                .id(userId)
+                .userName("Hong")
+                .userPoint(0L)
+                .build();
+        when(queueRepository.findByToken(token)).thenReturn(Optional.of(queue));
+        when(usersRepository.findById(userId)).thenReturn(Optional.of(user));
+        when(ledgerRepository.save(any(Ledger.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        sut.chargeUserPoint(userId, amount);
+
+        assertEquals(amount, user.getUserPoint());
+        verify(ledgerRepository).save(any(Ledger.class));
     }
 
     @Test
-    void 존재하는유저를조회시_성공() {
+    void 유저포인트조회하기() {
+        String token = "some-token";
         Long userId = 1L;
-        Users user = new Users();
+
+        Queue queue = Queue.create(userId);
+        Users user = Users.builder()
+                .id(userId)
+                .userName("Hong")
+                .userPoint(50L)
+                .build();
+        when(queueRepository.findByToken(token)).thenReturn(Optional.of(queue));
         when(usersRepository.findById(userId)).thenReturn(Optional.of(user));
 
-        Users result = sut.getUserByUserId(userId);
+        Users result = sut.getUserPoint(userId);
 
-        assertNotNull(result);
+        assertEquals(50L, result.getUserPoint());
     }
-
 }

@@ -77,11 +77,14 @@ class QueueServiceTest {
     void 클라이언트가제공한토큰값을통해대기열토큰조회하기_성공() {
         String token = UUID.randomUUID().toString();
         Queue queue = Queue.create(1L);
+        Long count = 1L;
         when(queueRepository.findByToken(token)).thenReturn(Optional.of(queue));
+        when(queueRepository.countByUserQueueStatusAndUserIdLessThan(QueueStatus.READY, queue.getId())).thenReturn(count);
 
-        Queue result = sut.getQueueByToken(token);
+        QueryQueueDto result = sut.queryQueue(token);
 
-        assertEquals(queue, result);
+        assertEquals(queue, result.queue());
+        assertEquals(count, result.queueCount());
     }
 
     @Test
@@ -90,7 +93,7 @@ class QueueServiceTest {
         when(queueRepository.findByToken(token)).thenReturn(Optional.empty());
 
         assertThrows(RuntimeException.class, () -> {
-            sut.getQueueByToken(token);
+            sut.queryQueue(token);
         });
     }
 

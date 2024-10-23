@@ -1,16 +1,13 @@
 package hhplus.concertreservation.application.service;
 
 import hhplus.concertreservation.app.application.service.PaymentService;
-import hhplus.concertreservation.app.application.service.QueueService;
-import hhplus.concertreservation.app.application.service.UsersService;
 import hhplus.concertreservation.app.domain.constant.PaymentStatus;
 import hhplus.concertreservation.app.domain.constant.ReservationStatus;
 import hhplus.concertreservation.app.domain.constant.SeatStatus;
 import hhplus.concertreservation.app.domain.entity.*;
-import hhplus.concertreservation.app.domain.repository.LedgerRepository;
-import hhplus.concertreservation.app.domain.repository.PaymentRepository;
-import hhplus.concertreservation.app.domain.repository.ReservationRepository;
-import hhplus.concertreservation.app.domain.repository.SeatRepository;
+import hhplus.concertreservation.app.domain.repository.*;
+import hhplus.concertreservation.config.exception.ErrorCode;
+import hhplus.concertreservation.config.exception.FailException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -32,8 +29,8 @@ class PaymentServiceTest {
     @Mock private LedgerRepository ledgerRepository;
     @Mock private ReservationRepository reservationRepository;
     @Mock private SeatRepository seatRepository;
-    @Mock private QueueService queueService;
-    @Mock private UsersService usersService;
+    @Mock private QueueRepository queueRepository;
+    @Mock private UsersRepository usersRepository;
 
     @BeforeEach
     void setUp() {
@@ -41,49 +38,7 @@ class PaymentServiceTest {
     }
 
     @Test
-    void 포인트충전성공시_원장생성() {
-        String token = "some-token";
-        Long amount = 100L;
-        Long userId = 1L;
-
-        Queue queue = Queue.create(userId);
-        Users user = Users.builder()
-                .id(userId)
-                .userName("Hong")
-                .userPoint(0L)
-                .build();
-        when(queueService.getQueueByToken(token)).thenReturn(queue);
-        when(usersService.getUserByUserId(userId)).thenReturn(user);
-        when(ledgerRepository.save(any(Ledger.class))).thenAnswer(invocation -> invocation.getArgument(0));
-
-        sut.chargeUserPoint(token, amount);
-
-        assertEquals(amount, user.getUserPoint());
-        verify(ledgerRepository).save(any(Ledger.class));
-    }
-
-    @Test
-    void 유저포인트조회하기() {
-        String token = "some-token";
-        Long userId = 1L;
-
-        Queue queue = Queue.create(userId);
-        Users user = Users.builder()
-                .id(userId)
-                .userName("Hong")
-                .userPoint(50L)
-                .build();
-        when(queueService.getQueueByToken(token)).thenReturn(queue);
-        when(usersService.getUserByUserId(userId)).thenReturn(user);
-
-        Users result = sut.getUserPoint(token);
-
-        assertEquals(50L, result.getUserPoint());
-    }
-
-    @Test
     void 결제성공시_결제내역생성() {
-        String token = "some-token";
         Long reservationId = 1L;
         Long amount = 50L;
         Long userId = 1L;
@@ -98,13 +53,13 @@ class PaymentServiceTest {
         Reservation reservation = Reservation.create(userId, seatId);
         reservation.changeStatus(ReservationStatus.PENDING);
 
-        when(queueService.getQueueByToken(token)).thenReturn(queue);
         when(reservationRepository.findById(reservationId)).thenReturn(Optional.of(reservation));
-        when(usersService.getUserByUserId(userId)).thenReturn(user);
+        when(queueRepository.findByUserId(userId)).thenReturn(Optional.of(queue));
+        when(usersRepository.findById(userId)).thenReturn(Optional.of(user));
         when(paymentRepository.save(any(Payment.class))).thenAnswer(invocation -> invocation.getArgument(0));
         when(ledgerRepository.save(any(Ledger.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        Payment result = sut.useUserPoint(token, reservationId, amount);
+        Payment result = sut.useUserPoint(userId, reservationId, amount);
 
         assertNotNull(result);
         assertEquals(amount, result.getAmount());
@@ -116,7 +71,6 @@ class PaymentServiceTest {
 
     @Test
     void 결제실패시_좌석및예약상태변경() {
-        String token = "some-token";
         Long reservationId = 1L;
         Long amount = 50L;
         Long userId = 1L;
@@ -129,14 +83,13 @@ class PaymentServiceTest {
 
 
         when(reservationRepository.findById(reservationId)).thenReturn(Optional.of(reservation));
-        when(seatRepository.findById(reservation.getSeatId())).thenReturn(Optional.of(seat));
-        when(queueService.getQueueByToken(token)).thenThrow(new RuntimeException("대기열이 만료되었습니다"));
+        when(queueRepository.findByUserId(userId)).thenThrow(new FailException(ErrorCode.EXPIRED_QUEUE_TOKEN));
+        when(seatRepository.findById(seatId)).thenReturn(Optional.of(seat));
 
-        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
-            sut.useUserPoint(token, reservationId, amount);
+        assertThrows(FailException.class, () -> {
+            sut.useUserPoint(userId, reservationId, amount);
         });
 
-        assertEquals("결제 중 오류가 발생했습니다", exception.getMessage());
         assertEquals(ReservationStatus.FAILED, reservation.getReservationStatus());
     }
 }

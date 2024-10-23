@@ -19,8 +19,6 @@ public class SeatService {
     }
 
     public Seat getSeat(Long concertId, Long seatNumber) {
-        return seatRepository.findByConcertIdAndSeatNumber(concertId, seatNumber).orElseThrow(
-                () -> new RuntimeException("존재하지 않는 좌석입니다")
-        );
+        return Seat.getOrThrowIfNotFound(seatRepository.findByConcertIdAndSeatNumber(concertId, seatNumber));
     }
 }

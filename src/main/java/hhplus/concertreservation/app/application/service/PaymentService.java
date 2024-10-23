@@ -5,10 +5,9 @@ import hhplus.concertreservation.app.domain.constant.ReservationStatus;
 import hhplus.concertreservation.app.domain.constant.SeatStatus;
 import hhplus.concertreservation.app.domain.constant.TransactionType;
 import hhplus.concertreservation.app.domain.entity.*;
-import hhplus.concertreservation.app.domain.repository.LedgerRepository;
-import hhplus.concertreservation.app.domain.repository.PaymentRepository;
-import hhplus.concertreservation.app.domain.repository.ReservationRepository;
-import hhplus.concertreservation.app.domain.repository.SeatRepository;
+import hhplus.concertreservation.app.domain.repository.*;
+import hhplus.concertreservation.config.exception.ErrorCode;
+import hhplus.concertreservation.config.exception.FailException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -23,51 +22,46 @@ public class PaymentService {
     private final LedgerRepository ledgerRepository;
     private final ReservationRepository reservationRepository;
     private final SeatRepository seatRepository;
-    private final QueueService queueService;
-    private final UsersService usersService;
+    private final QueueRepository queueRepository;
+    private final UsersRepository usersRepository;
 
     @Transactional
-    public void chargeUserPoint(String token, Long amount) {
-        Queue queue = queueService.getQueueByToken(token);
-        // 유저의 포인트 충전
-        Users user = usersService.getUserByUserId(queue.getUserId());
-        user.calculateUserPoint(amount);
-        // 원장 생성
-        ledgerRepository.save(Ledger.create(user.getId(), amount, TransactionType.CHARGE));
-    }
+    public Payment useUserPoint(Long userId, Long reservationId, Long amount) {
 
-    public Users getUserPoint(String token) {
-        Queue queue = queueService.getQueueByToken(token);
-        return usersService.getUserByUserId(queue.getUserId());
-    }
-
-    @Transactional
-    public Payment useUserPoint(String token, Long reservationId, Long amount) {
+        Reservation reservation = Reservation.getOrThrowIfNotFound(reservationRepository.findById(reservationId));
 
         try {
-            Queue queue = queueService.getQueueByToken(token);
-            // 예약 상태 성공으로 변환
-            Reservation reservation = reservationRepository.findById(reservationId).orElse(null);
-            reservation.changeStatus(ReservationStatus.SUCCESS);
-            // 유저 포인트 사용
-            Users user = usersService.getUserByUserId(queue.getUserId());
-            user.calculateUserPoint(amount * -1);
+            // 대기열 만료 확인 (만료된 토큰은 이미 스케줄러에 의해 삭제됨)
+            Queue queue = Queue.getOrThrowIfNotFound(queueRepository.findByUserId(userId));
+            System.out.println("--------------------대기열 토큰 확인");
+            Users user = Users.getOrThrowIfNotFound(usersRepository.findById(userId));
+            System.out.println("--------------------유저 확인");
+
+            // 유저 포인트 사용 (유저의 남은 잔액부터 확인)
+            user.usePoints(amount);
+            // 결제 내역 생성
+            Payment payment = paymentRepository.save(Payment.create(user.getId(), reservationId, amount, PaymentStatus.SUCCESS));
+            System.out.println("--------------------결제 내역 생성");
+
             // 원장 생성
-            ledgerRepository.save(Ledger.create(user.getId(), amount, TransactionType.USE));
+            ledgerRepository.save(Ledger.create(userId, amount, TransactionType.USE));
+            System.out.println("--------------------원장 생성");
+
+            // 예약 상태 성공으로 변환
+            reservation.changeStatus(ReservationStatus.SUCCESS);
             // 만료 시키기 위해 만료 시간 변경
             queue.changeExpiredAt(LocalDateTime.now());
-            // 결제 내역 생성
-            return paymentRepository.save(Payment.create(user.getId(), reservationId, amount, PaymentStatus.SUCCESS));
 
-        } catch (RuntimeException e) {
+            return payment;
+
+        } catch (FailException e) {
             // 예약 상태 실패로 변환
-            Reservation reservation = reservationRepository.findById(reservationId).orElse(null);
             reservation.changeStatus(ReservationStatus.FAILED);
             // 좌석 예약 가능 상태로 변환
-            Seat seat = seatRepository.findById(reservation.getSeatId()).orElse(null);
+            Seat seat = Seat.getOrThrowIfNotFound(seatRepository.findById(reservation.getSeatId()));
+            System.out.println("--------------------좌석 조회 확인");
             seat.changeStatus(SeatStatus.AVAILABLE);
-
-            throw new RuntimeException("결제 중 오류가 발생했습니다");
+            throw new FailException(ErrorCode.PAYMENT_FAILED);
         }
     }
 }
