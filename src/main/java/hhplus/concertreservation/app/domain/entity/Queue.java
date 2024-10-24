@@ -54,4 +54,9 @@ public class Queue {
         return optionalQueue.orElseThrow(
                 () -> new FailException(ErrorCode.EXPIRED_QUEUE_TOKEN));
     }
+
+    public void checkActiveOrThrow() {
+        if (this.getUserQueueStatus() != QueueStatus.ACTIVE)
+            throw new FailException(ErrorCode.INVALID_QUEUE_STATUS);
+    }
 }
