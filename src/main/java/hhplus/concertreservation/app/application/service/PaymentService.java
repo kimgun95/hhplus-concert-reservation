@@ -10,10 +10,12 @@ import hhplus.concertreservation.config.exception.ErrorCode;
 import hhplus.concertreservation.config.exception.FailException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class PaymentService {
@@ -29,6 +31,7 @@ public class PaymentService {
     public Payment useUserPoint(Long userId, Long reservationId, Long amount) {
 
         Reservation reservation = Reservation.getOrThrowIfNotFound(reservationRepository.findById(reservationId));
+        log.info("좌석 예약 요청 유저의 ID : {}", reservation.getUserId());
 
         try {
             // 대기열 만료 확인 (만료된 토큰은 이미 스케줄러에 의해 삭제됨)
@@ -55,6 +58,7 @@ public class PaymentService {
             return payment;
 
         } catch (FailException e) {
+            log.warn("결제가 실패했습니다. reservation ID : {}", reservation.getId());
             // 예약 상태 실패로 변환
             reservation.changeStatus(ReservationStatus.FAILED);
             // 좌석 예약 가능 상태로 변환
