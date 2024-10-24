@@ -12,9 +12,8 @@ import org.mockito.MockitoAnnotations;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -47,34 +46,5 @@ class SeatServiceTest {
 
         assertEquals(2, result.size());
         verify(seatRepository).findByConcertIdAndSeatStatus(concertId, SeatStatus.AVAILABLE);
-    }
-
-    @Test
-    void 좌석조회_예외발생() {
-        Long concertId = 1L;
-        Long seatNumber = 10L;
-
-        when(seatRepository.findByConcertIdAndSeatNumber(concertId, seatNumber))
-                .thenReturn(Optional.empty());
-
-        assertThrows(RuntimeException.class, () -> {
-            sut.getSeat(concertId, seatNumber);
-        });
-    }
-
-    @Test
-    void 좌석조회_성공() {
-        Long concertId = 1L;
-        Long seatNumber = 1L;
-        Seat seat = new Seat();
-        seat.changeStatus(SeatStatus.AVAILABLE);
-
-        when(seatRepository.findByConcertIdAndSeatNumber(concertId, seatNumber))
-                .thenReturn(Optional.of(seat));
-
-        Seat result = sut.getSeat(concertId, seatNumber);
-
-        assertNotNull(result);
-        assertEquals(seat.getSeatStatus(), result.getSeatStatus());
     }
 }

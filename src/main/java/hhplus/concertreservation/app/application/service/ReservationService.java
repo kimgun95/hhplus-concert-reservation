@@ -9,10 +9,12 @@ import hhplus.concertreservation.app.domain.repository.ReservationRepository;
 import hhplus.concertreservation.app.domain.repository.SeatRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class ReservationService {
@@ -22,14 +24,15 @@ public class ReservationService {
     private final QueueRepository queueRepository;
 
     @Transactional
-    public Reservation reserveSeat(String token, Long concertId, Long seatNumber) {
+    public Reservation reserveSeat(Long userId, Long concertId, Long seatNumber) {
         // 비관적 락
         Seat seat = Seat.getOrThrowIfNotFound(seatRepository.findByConcertIdAndSeatNumber(concertId, seatNumber));
         // AVAILABLE이 아니라면 예외
         Seat.validateIfAvailable(seat);
         // 대기열 5분 설정
-        Queue queue = Queue.getOrThrowIfNotFound(queueRepository.findByToken(token));
+        Queue queue = Queue.getOrThrowIfNotFound(queueRepository.findByUserId(userId));
         queue.changeExpiredAt(LocalDateTime.now().plusMinutes(5));
+        log.info("좌석 예약 요청 유저의 ID : {}", queue.getUserId());
         // 좌석 예약 상태로 변환
         seat.changeStatus(SeatStatus.RESERVED);
         // 예약 생성

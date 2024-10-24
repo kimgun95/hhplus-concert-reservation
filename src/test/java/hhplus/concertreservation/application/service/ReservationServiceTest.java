@@ -43,7 +43,6 @@ class ReservationServiceTest {
 
     @Test
     void 좌석예약_성공() {
-        String token = "some-token";
         Long concertId = 1L;
         Long seatNumber = 1L;
         Long userId = 1L;
@@ -57,10 +56,10 @@ class ReservationServiceTest {
                 .build();
 
         when(seatRepository.findByConcertIdAndSeatNumber(concertId, seatNumber)).thenReturn(Optional.of(seat));
-        when(queueRepository.findByToken(token)).thenReturn(Optional.of(queue));
+        when(queueRepository.findByUserId(userId)).thenReturn(Optional.of(queue));
         when(reservationRepository.save(any(Reservation.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        Reservation result = sut.reserveSeat(token, concertId, seatNumber);
+        Reservation result = sut.reserveSeat(userId, concertId, seatNumber);
 
         assertNotNull(result);
         assertEquals(ReservationStatus.PENDING, result.getReservationStatus());
@@ -70,9 +69,9 @@ class ReservationServiceTest {
 
     @Test
     void 좌석이예매된상태라면_예외발생() {
-        String token = "some-token";
         Long concertId = 1L;
         Long seatNumber = 1L;
+        Long userId = 1L;
 
         Seat seat = new Seat();
         seat.changeStatus(SeatStatus.RESERVED);
@@ -80,23 +79,23 @@ class ReservationServiceTest {
         when(seatRepository.findByConcertIdAndSeatNumber(concertId, seatNumber)).thenReturn(Optional.of(seat));
 
         assertThrows(RuntimeException.class, () -> {
-            sut.reserveSeat(token, concertId, seatNumber);
+            sut.reserveSeat(userId, concertId, seatNumber);
         });
     }
 
     @Test
     void 대기열이만료되었다면_좌석예약실패() {
-        String token = "invalid-token";
         Long concertId = 1L;
         Long seatNumber = 1L;
+        Long userId = 1L;
 
         Seat seat = new Seat();
 
         when(seatRepository.findByConcertIdAndSeatNumber(concertId, seatNumber)).thenReturn(Optional.of(seat));
-        when(queueRepository.findByToken(token)).thenThrow(new RuntimeException("대기열을 찾을 수 없습니다"));
+        when(queueRepository.findByUserId(userId)).thenThrow(new RuntimeException("대기열을 찾을 수 없습니다"));
 
         assertThrows(RuntimeException.class, () -> {
-            sut.reserveSeat(token, concertId, seatNumber);
+            sut.reserveSeat(userId, concertId, seatNumber);
         });
     }
 

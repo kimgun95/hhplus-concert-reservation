@@ -32,12 +32,12 @@ public class Seat {
 
     public static Seat getOrThrowIfNotFound(Optional<Seat> optionalSeat) {
         return optionalSeat.orElseThrow(
-                () -> new FailException(ErrorCode.SEAT_NOT_FOUND));
+                () -> new FailException(ErrorCode.SEAT_NOT_FOUND, FailException.LogLevel.ERROR));
     }
 
     public static void validateIfAvailable(Seat seat) {
         if (seat.getSeatStatus() != SeatStatus.AVAILABLE) {
-            throw new FailException(ErrorCode.RESERVED_SEAT);
+            throw new FailException(ErrorCode.RESERVED_SEAT, FailException.LogLevel.WARN);
         }
     }
 }

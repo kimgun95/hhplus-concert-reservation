@@ -7,8 +7,10 @@ import hhplus.concertreservation.app.domain.repository.LedgerRepository;
 import hhplus.concertreservation.app.domain.repository.UsersRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class UsersService {
@@ -18,14 +20,14 @@ public class UsersService {
 
     @Transactional
     public void chargeUserPoint(Long userId, Long amount) {
-        // 유저의 포인트 충전
+        log.info("포인트 충전 요청 유저의 ID : {}", userId);
         Users user = Users.getOrThrowIfNotFound(usersRepository.findById(userId));
         user.chargePoints(amount);
-        // 원장 생성
         ledgerRepository.save(Ledger.create(userId, amount, TransactionType.CHARGE));
     }
 
     public Users getUserPoint(Long userId) {
+        log.info("포인트 조회 요청 유저의 ID : {}", userId);
         return Users.getOrThrowIfNotFound(usersRepository.findById(userId));
     }
 }

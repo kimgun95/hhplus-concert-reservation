@@ -17,8 +17,4 @@ public class SeatService {
     public List<Seat> getSeats(Long concertId) {
         return seatRepository.findByConcertIdAndSeatStatus(concertId, SeatStatus.AVAILABLE);
     }
-
-    public Seat getSeat(Long concertId, Long seatNumber) {
-        return Seat.getOrThrowIfNotFound(seatRepository.findByConcertIdAndSeatNumber(concertId, seatNumber));
-    }
 }

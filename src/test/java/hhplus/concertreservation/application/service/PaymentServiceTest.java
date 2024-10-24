@@ -59,7 +59,7 @@ class PaymentServiceTest {
         when(paymentRepository.save(any(Payment.class))).thenAnswer(invocation -> invocation.getArgument(0));
         when(ledgerRepository.save(any(Ledger.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        Payment result = sut.useUserPoint(userId, reservationId, amount);
+        Payment result = sut.payment(userId, reservationId, amount);
 
         assertNotNull(result);
         assertEquals(amount, result.getAmount());
@@ -76,19 +76,23 @@ class PaymentServiceTest {
         Long userId = 1L;
         Long seatId = 1L;
 
+        Users user = Users.builder()
+                .id(userId)
+                .userName("Hong")
+                .userPoint(100L)
+                .build();
         Reservation reservation = Reservation.create(userId, seatId);
-        reservation.changeStatus(ReservationStatus.PENDING);
         Seat seat = new Seat();
         seat.changeStatus(SeatStatus.RESERVED);
 
 
         when(reservationRepository.findById(reservationId)).thenReturn(Optional.of(reservation));
+        when(usersRepository.findById(userId)).thenReturn(Optional.of(user));
         when(queueRepository.findByUserId(userId)).thenThrow(new FailException(ErrorCode.EXPIRED_QUEUE_TOKEN));
+
         when(seatRepository.findById(seatId)).thenReturn(Optional.of(seat));
 
-        assertThrows(FailException.class, () -> {
-            sut.useUserPoint(userId, reservationId, amount);
-        });
+        sut.payment(userId, reservationId, amount);
 
         assertEquals(ReservationStatus.FAILED, reservation.getReservationStatus());
     }

@@ -35,6 +35,6 @@ public class Users {
 
     public static Users getOrThrowIfNotFound(Optional<Users> optionalUsers) {
         return optionalUsers.orElseThrow(
-                () -> new FailException(ErrorCode.USER_NOT_FOUND));
+                () -> new FailException(ErrorCode.USER_NOT_FOUND, FailException.LogLevel.ERROR));
     }
 }

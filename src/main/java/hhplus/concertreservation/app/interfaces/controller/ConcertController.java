@@ -17,8 +17,7 @@ public class ConcertController {
 
     @GetMapping("/concert")
     public ResponseEntity<List<ConcertDateTimeResponse>> concertDateTime(
-            @RequestHeader String token,
-            @RequestParam String concertName
+            @RequestParam("concertName") String concertName
     ) {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(concertService.getConcerts(concertName)

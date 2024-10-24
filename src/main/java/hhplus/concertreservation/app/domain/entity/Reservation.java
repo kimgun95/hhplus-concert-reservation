@@ -42,6 +42,6 @@ public class Reservation {
 
     public static Reservation getOrThrowIfNotFound(Optional<Reservation> optionalReservation) {
         return optionalReservation.orElseThrow(
-                () -> new FailException(ErrorCode.RESERVATION_NOT_FOUND));
+                () -> new FailException(ErrorCode.RESERVATION_NOT_FOUND, FailException.LogLevel.ERROR));
     }
 }
