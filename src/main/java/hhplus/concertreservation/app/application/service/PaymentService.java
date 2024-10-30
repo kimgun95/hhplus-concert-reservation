@@ -31,7 +31,7 @@ public class PaymentService {
 
         Reservation reservation = Reservation.getOrThrowIfNotFound(reservationRepository.findById(reservationId));
         Users user = Users.getOrThrowIfNotFound(usersRepository.findById(userId));
-        log.info("좌석 예약 요청 유저의 ID : {}", reservation.getUserId());
+        log.info("결제 요청 유저의 ID : {}", reservation.getUserId());
 
         try {
             // 대기열 만료 확인 (만료된 토큰은 이미 스케줄러에 의해 삭제됨)
@@ -46,7 +46,7 @@ public class PaymentService {
             reservation.changeStatus(ReservationStatus.SUCCESS);
             // 만료 시키기 위해 만료 시간 변경
             queue.changeExpiredAt(LocalDateTime.now());
-
+            log.info("결제 성공한 유저의 ID : {}", payment.getUserId());
             return payment;
 
         } catch (FailException e) {

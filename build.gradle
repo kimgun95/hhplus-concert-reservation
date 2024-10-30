@@ -32,6 +32,10 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0'
+	implementation 'com.h2database:h2:2.2.224'
+	runtimeOnly 'com.h2database:h2:2.2.224'
+	testImplementation 'com.h2database:h2:2.2.224'
+	implementation 'org.springframework.boot:spring-boot-starter-security'
 }
 
 tasks.named('test') {
