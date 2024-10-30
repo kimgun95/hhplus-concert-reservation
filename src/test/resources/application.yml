@@ -1,0 +1,33 @@
+spring:
+  application.name: concert
+
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:H2DB
+    username: sa
+    password:
+
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+        format_sql: false
+        show_sql: false
+    show-sql: true
+    defer-datasource-initialization: true
+
+  sql:
+    init:
+      mode: always
+      username: sa
+      password:
+      schema-locations: classpath:ddl.sql
+      data-locations: classpath:data.sql
