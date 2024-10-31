@@ -2,6 +2,8 @@ package hhplus.concertreservation.config.exception;
 
 import lombok.Getter;
 
+import java.text.MessageFormat;
+
 @Getter
 public class FailException extends RuntimeException {
 
@@ -22,7 +24,8 @@ public class FailException extends RuntimeException {
 
     @Override
     public String toString() {
-        return String.format("ErrorCode: %s, Message: %s", errorCode.getCode(), errorCode.getMessage());
+        String pattern = "ErrorName: {0}, Message: {1}";
+        return MessageFormat.format(pattern, errorCode.name(), errorCode.getMessage());
     }
 
     public enum LogLevel {
