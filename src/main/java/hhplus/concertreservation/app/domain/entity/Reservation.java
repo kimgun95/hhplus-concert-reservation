@@ -1,14 +1,10 @@
 package hhplus.concertreservation.app.domain.entity;
 
 import hhplus.concertreservation.app.domain.constant.ReservationStatus;
-import hhplus.concertreservation.config.exception.ErrorCode;
-import hhplus.concertreservation.config.exception.FailException;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.util.Optional;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -38,10 +34,5 @@ public class Reservation {
 
     public void changeStatus(ReservationStatus status) {
         this.reservationStatus = status;
-    }
-
-    public static Reservation getOrThrowIfNotFound(Optional<Reservation> optionalReservation) {
-        return optionalReservation.orElseThrow(
-                () -> new FailException(ErrorCode.RESERVATION_NOT_FOUND, FailException.LogLevel.ERROR));
     }
 }

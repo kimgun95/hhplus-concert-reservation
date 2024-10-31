@@ -1,8 +1,6 @@
 package hhplus.concertreservation.app.domain.entity;
 
 import hhplus.concertreservation.app.domain.constant.QueueStatus;
-import hhplus.concertreservation.config.exception.ErrorCode;
-import hhplus.concertreservation.config.exception.FailException;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -10,7 +8,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
 import java.util.UUID;
 
 @NoArgsConstructor
@@ -48,15 +45,5 @@ public class Queue {
 
     public void changeExpiredAt(LocalDateTime expiredAt) {
         this.expiredAt = expiredAt;
-    }
-
-    public static Queue getOrThrowIfNotFound(Optional<Queue> optionalQueue) {
-        return optionalQueue.orElseThrow(
-                () -> new FailException(ErrorCode.EXPIRED_QUEUE_TOKEN));
-    }
-
-    public void checkActiveOrThrow() {
-        if (this.getUserQueueStatus() != QueueStatus.ACTIVE)
-            throw new FailException(ErrorCode.INVALID_QUEUE_STATUS);
     }
 }

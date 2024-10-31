@@ -8,8 +8,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.util.Optional;
-
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -31,10 +29,5 @@ public class Users {
 
     public void chargePoints(Long point) {
         this.userPoint += point;
-    }
-
-    public static Users getOrThrowIfNotFound(Optional<Users> optionalUsers) {
-        return optionalUsers.orElseThrow(
-                () -> new FailException(ErrorCode.USER_NOT_FOUND, FailException.LogLevel.ERROR));
     }
 }

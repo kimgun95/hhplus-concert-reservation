@@ -1,5 +1,7 @@
 package hhplus.concertreservation.app.application.service;
 
+import hhplus.concertreservation.app.domain.checker.QueueChecker;
+import hhplus.concertreservation.app.domain.checker.SeatChecker;
 import hhplus.concertreservation.app.domain.constant.SeatStatus;
 import hhplus.concertreservation.app.domain.entity.Queue;
 import hhplus.concertreservation.app.domain.entity.Reservation;
@@ -22,15 +24,17 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final SeatRepository seatRepository;
     private final QueueRepository queueRepository;
+    private final QueueChecker queueChecker;
+    private final SeatChecker seatChecker;
 
     @Transactional
     public Reservation reserveSeat(Long userId, Long concertId, Long seatNumber) {
         // 비관적 락
-        Seat seat = Seat.getOrThrowIfNotFound(seatRepository.findByConcertIdAndSeatNumber(concertId, seatNumber));
+        Seat seat = seatChecker.getOrThrowIfNotFound(seatRepository.findByConcertIdAndSeatNumber(concertId, seatNumber));
         // AVAILABLE이 아니라면 예외
-        Seat.validateIfAvailable(seat);
+        seatChecker.validateIfAvailable(seat);
         // 대기열 5분 설정
-        Queue queue = Queue.getOrThrowIfNotFound(queueRepository.findByUserId(userId));
+        Queue queue = queueChecker.getOrThrowIfNotFound(queueRepository.findByUserId(userId));
         queue.changeExpiredAt(LocalDateTime.now().plusMinutes(5));
         log.info("좌석 예약 요청 유저의 ID : {}", queue.getUserId());
         // 좌석 예약 상태로 변환

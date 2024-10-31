@@ -1,5 +1,6 @@
 package hhplus.concertreservation.app.application.service;
 
+import hhplus.concertreservation.app.domain.checker.QueueChecker;
 import hhplus.concertreservation.app.domain.constant.QueueStatus;
 import hhplus.concertreservation.app.domain.dto.QueryQueueDto;
 import hhplus.concertreservation.app.domain.entity.Queue;
@@ -20,6 +21,7 @@ import java.util.List;
 public class QueueService {
 
     private final QueueRepository queueRepository;
+    private final QueueChecker queueChecker;
 
     @Transactional
     public Queue getQueue(Long userId) {
@@ -29,7 +31,7 @@ public class QueueService {
     } 
 
     public QueryQueueDto queryQueue(String token) {
-        Queue searchedQueue = Queue.getOrThrowIfNotFound(queueRepository.findByToken(token));
+        Queue searchedQueue = queueChecker.getOrThrowIfNotFound(queueRepository.findByToken(token));
         log.info("토큰 조회 요청 유저의 ID : {}", searchedQueue.getUserId());
         Long queueCount = queueRepository.countByUserQueueStatusAndUserIdLessThan(QueueStatus.READY, searchedQueue.getId());
         return QueryQueueDto.of(searchedQueue, queueCount);

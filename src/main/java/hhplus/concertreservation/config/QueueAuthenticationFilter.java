@@ -1,5 +1,6 @@
 package hhplus.concertreservation.config;
 
+import hhplus.concertreservation.app.domain.checker.QueueChecker;
 import hhplus.concertreservation.app.domain.entity.Queue;
 import hhplus.concertreservation.app.domain.repository.QueueRepository;
 import hhplus.concertreservation.config.exception.FailException;
@@ -19,6 +20,7 @@ import java.io.IOException;
 public class QueueAuthenticationFilter extends OncePerRequestFilter {
 
     private final QueueRepository queueRepository;
+    private final QueueChecker queueChecker;
     private final AntPathMatcher pathMatcher = new AntPathMatcher();
     private String filterProcessesUrl = "/seat/**";
 
@@ -38,8 +40,8 @@ public class QueueAuthenticationFilter extends OncePerRequestFilter {
         log.info("대기열 인증 토큰의 헤더값: {}", token);
 
         try {
-            Queue queue = Queue.getOrThrowIfNotFound(queueRepository.findByToken(token));
-            queue.checkActiveOrThrow();
+            Queue queue = queueChecker.getOrThrowIfNotFound(queueRepository.findByToken(token));
+            queueChecker.checkActiveOrThrow(queue);
 
             filterChain.doFilter(request, response);
         } catch (FailException e) {

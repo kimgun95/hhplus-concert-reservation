@@ -1,5 +1,9 @@
 package hhplus.concertreservation.app.application.service;
 
+import hhplus.concertreservation.app.domain.checker.QueueChecker;
+import hhplus.concertreservation.app.domain.checker.ReservationChecker;
+import hhplus.concertreservation.app.domain.checker.SeatChecker;
+import hhplus.concertreservation.app.domain.checker.UserChecker;
 import hhplus.concertreservation.app.domain.constant.PaymentStatus;
 import hhplus.concertreservation.app.domain.constant.ReservationStatus;
 import hhplus.concertreservation.app.domain.constant.SeatStatus;
@@ -24,18 +28,22 @@ public class PaymentService {
     private final ReservationRepository reservationRepository;
     private final SeatRepository seatRepository;
     private final QueueRepository queueRepository;
-    private final UsersRepository usersRepository;
+    private final UserRepository userRepository;
+    private final QueueChecker queueChecker;
+    private final ReservationChecker reservationChecker;
+    private final SeatChecker seatChecker;
+    private final UserChecker userChecker;
 
     @Transactional
     public Payment payment(Long userId, Long reservationId, Long amount) {
 
-        Reservation reservation = Reservation.getOrThrowIfNotFound(reservationRepository.findById(reservationId));
-        Users user = Users.getOrThrowIfNotFound(usersRepository.findById(userId));
+        Reservation reservation = reservationChecker.getOrThrowIfNotFound(reservationRepository.findById(reservationId));
+        User user = userChecker.getOrThrowIfNotFound(userRepository.findById(userId));
         log.info("결제 요청 유저의 ID : {}", reservation.getUserId());
 
         try {
             // 대기열 만료 확인 (만료된 토큰은 이미 스케줄러에 의해 삭제됨)
-            Queue queue = Queue.getOrThrowIfNotFound(queueRepository.findByUserId(userId));
+            Queue queue = queueChecker.getOrThrowIfNotFound(queueRepository.findByUserId(userId));
             // 유저 포인트 사용 (유저의 남은 잔액부터 확인)
             user.usePoints(amount);
             // 결제 내역 생성
@@ -54,7 +62,7 @@ public class PaymentService {
             // 예약 상태 실패로 변환
             reservation.changeStatus(ReservationStatus.FAILED);
             // 좌석 예약 가능 상태로 변환
-            Seat seat = Seat.getOrThrowIfNotFound(seatRepository.findById(reservation.getSeatId()));
+            Seat seat = seatChecker.getOrThrowIfNotFound(seatRepository.findById(reservation.getSeatId()));
             seat.changeStatus(SeatStatus.AVAILABLE);
             // 결제 내역 생성
             return paymentRepository.save(Payment.create(user.getId(), reservationId, amount, PaymentStatus.FAILED));
