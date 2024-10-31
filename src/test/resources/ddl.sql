@@ -19,7 +19,7 @@ CREATE TABLE reservation (
                              reservation_status VARCHAR(10)
 );
 
-CREATE TABLE user (
+CREATE TABLE users (
                       user_id BIGINT AUTO_INCREMENT PRIMARY KEY,
                       user_point BIGINT,
                       user_name VARCHAR(30)
