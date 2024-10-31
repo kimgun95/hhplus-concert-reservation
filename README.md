@@ -1,5 +1,9 @@
 ## 동시성 이슈 파악 및 제어 방식 도입
 
+---
+
+노션: [좌석 예약에 대한 동시성 처리 테스트](https://obtainable-poppyseed-72e.notion.site/130e810ff43e80a5a564eec52b3e16a8?pvs=4)
+
 <details>
   <summary>Swagger API 캡처본</summary>
 
