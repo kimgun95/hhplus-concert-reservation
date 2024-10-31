@@ -4,8 +4,8 @@ INSERT INTO seat (concert_id, seat_number, seat_status) VALUES (1, 1, 'AVAILABLE
 INSERT INTO seat (concert_id, seat_number, seat_status) VALUES (1, 2, 'AVAILABLE');
 INSERT INTO seat (concert_id, seat_number, seat_status) VALUES (1, 3, 'AVAILABLE');
 
-INSERT INTO users (user_name, user_point) VALUES ('user1', 10000);
-INSERT INTO users (user_name, user_point) VALUES ('user2', 10000);
-INSERT INTO users (user_name, user_point) VALUES ('user3', 10000);
-INSERT INTO users (user_name, user_point) VALUES ('user4', 10000);
-INSERT INTO users (user_name, user_point) VALUES ('user5', 10000);
+INSERT INTO user (user_name, user_point) VALUES ('user1', 10000);
+INSERT INTO user (user_name, user_point) VALUES ('user2', 10000);
+INSERT INTO user (user_name, user_point) VALUES ('user3', 10000);
+INSERT INTO user (user_name, user_point) VALUES ('user4', 10000);
+INSERT INTO user (user_name, user_point) VALUES ('user5', 10000);

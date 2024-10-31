@@ -1,12 +1,12 @@
 package hhplus.concertreservation.application.service;
 
-import hhplus.concertreservation.app.application.service.UsersService;
+import hhplus.concertreservation.app.application.service.UserService;
 import hhplus.concertreservation.app.domain.entity.Ledger;
 import hhplus.concertreservation.app.domain.entity.Queue;
-import hhplus.concertreservation.app.domain.entity.Users;
+import hhplus.concertreservation.app.domain.entity.User;
 import hhplus.concertreservation.app.domain.repository.LedgerRepository;
 import hhplus.concertreservation.app.domain.repository.QueueRepository;
-import hhplus.concertreservation.app.domain.repository.UsersRepository;
+import hhplus.concertreservation.app.domain.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -20,14 +20,14 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-class UsersServiceTest {
+class UserServiceTest {
 
-    @Mock private UsersRepository usersRepository;
+    @Mock private UserRepository userRepository;
     @Mock private QueueRepository queueRepository;
     @Mock private LedgerRepository ledgerRepository;
 
     @InjectMocks
-    private UsersService sut;
+    private UserService sut;
 
     @BeforeEach
     void setUp() {
@@ -41,13 +41,13 @@ class UsersServiceTest {
         Long userId = 1L;
 
         Queue queue = Queue.create(userId);
-        Users user = Users.builder()
+        User user = User.builder()
                 .id(userId)
                 .userName("Hong")
                 .userPoint(0L)
                 .build();
         when(queueRepository.findByToken(token)).thenReturn(Optional.of(queue));
-        when(usersRepository.findById(userId)).thenReturn(Optional.of(user));
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
         when(ledgerRepository.save(any(Ledger.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         sut.chargeUserPoint(userId, amount);
@@ -62,15 +62,15 @@ class UsersServiceTest {
         Long userId = 1L;
 
         Queue queue = Queue.create(userId);
-        Users user = Users.builder()
+        User user = User.builder()
                 .id(userId)
                 .userName("Hong")
                 .userPoint(50L)
                 .build();
         when(queueRepository.findByToken(token)).thenReturn(Optional.of(queue));
-        when(usersRepository.findById(userId)).thenReturn(Optional.of(user));
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
 
-        Users result = sut.getUserPoint(userId);
+        User result = sut.getUserPoint(userId);
 
         assertEquals(50L, result.getUserPoint());
     }

@@ -30,7 +30,7 @@ class PaymentServiceTest {
     @Mock private ReservationRepository reservationRepository;
     @Mock private SeatRepository seatRepository;
     @Mock private QueueRepository queueRepository;
-    @Mock private UsersRepository usersRepository;
+    @Mock private UserRepository userRepository;
 
     @BeforeEach
     void setUp() {
@@ -45,7 +45,7 @@ class PaymentServiceTest {
         Long seatId = 1L;
 
         Queue queue = Queue.create(userId);
-        Users user = Users.builder()
+        User user = User.builder()
                 .id(userId)
                 .userName("Hong")
                 .userPoint(100L)
@@ -55,7 +55,7 @@ class PaymentServiceTest {
 
         when(reservationRepository.findById(reservationId)).thenReturn(Optional.of(reservation));
         when(queueRepository.findByUserId(userId)).thenReturn(Optional.of(queue));
-        when(usersRepository.findById(userId)).thenReturn(Optional.of(user));
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
         when(paymentRepository.save(any(Payment.class))).thenAnswer(invocation -> invocation.getArgument(0));
         when(ledgerRepository.save(any(Ledger.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
@@ -76,7 +76,7 @@ class PaymentServiceTest {
         Long userId = 1L;
         Long seatId = 1L;
 
-        Users user = Users.builder()
+        User user = User.builder()
                 .id(userId)
                 .userName("Hong")
                 .userPoint(100L)
@@ -87,7 +87,7 @@ class PaymentServiceTest {
 
 
         when(reservationRepository.findById(reservationId)).thenReturn(Optional.of(reservation));
-        when(usersRepository.findById(userId)).thenReturn(Optional.of(user));
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
         when(queueRepository.findByUserId(userId)).thenThrow(new FailException(ErrorCode.EXPIRED_QUEUE_TOKEN));
 
         when(seatRepository.findById(seatId)).thenReturn(Optional.of(seat));

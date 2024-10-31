@@ -10,7 +10,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
 
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -27,7 +26,7 @@ public class ConcertreservationApplicationTests {
 	@Autowired private QueueService queueService;
 	@Autowired private SeatService seatService;
 	@Autowired private ReservationService reservationService;
-	@Autowired private UsersService usersService;
+	@Autowired private UserService userService;
 	@Autowired private PaymentService paymentService;
 	@Autowired private SeatRepository seatRepository;
 
@@ -44,7 +43,7 @@ public class ConcertreservationApplicationTests {
 		seatId = availableSeats.get(0).getId();
 		// 유저 포인트 충전
 		for (int i = 1; i <= 5; i++) {
-			usersService.chargeUserPoint((long) i, 10000L);
+			userService.chargeUserPoint((long) i, 10000L);
 		}
 	}
 
