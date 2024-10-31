@@ -33,6 +33,7 @@ public class ConcertreservationApplicationTests {
 	private Long concertId;
 	private Long seatNumber;
 	private Long seatId;
+	private int threadPoolSize;
 
 	@BeforeEach
 	public void setUp() {
@@ -41,20 +42,18 @@ public class ConcertreservationApplicationTests {
 		List<Seat> availableSeats = seatService.getSeats(concertId);
 		seatNumber = availableSeats.get(0).getSeatNumber();
 		seatId = availableSeats.get(0).getId();
-		// 유저 포인트 충전
-		for (int i = 1; i <= 5; i++) {
-			userService.chargeUserPoint((long) i, 10000L);
-		}
+
+		threadPoolSize = 1000;
 	}
 
 	@Test
 	public void testSeatReservationConcurrency() throws InterruptedException {
-		// 5명의 유저가 동시에 같은 좌석을 예약 시도하는 상황
-		ExecutorService executorService = Executors.newFixedThreadPool(5);
+		// 유저가 동시에 같은 좌석을 예약 시도하는 상황
+		ExecutorService executorService = Executors.newFixedThreadPool(threadPoolSize);
 		AtomicInteger successCnt = new AtomicInteger(0);
 		AtomicInteger failCnt = new AtomicInteger(0);
 
-		for (int i = 1; i <= 5; i++) {
+		for (int i = 1; i <= threadPoolSize; i++) {
 			Long userId = (long) i;
 			executorService.submit(() -> {
 				try {
@@ -82,6 +81,6 @@ public class ConcertreservationApplicationTests {
 		assertEquals(SeatStatus.RESERVED, seat.getSeatStatus(), "최종적으로 좌석은 예약 상태여야 합니다.");
 
 		assertEquals(1, successCnt.get(), "예약 성공은 한 명이어야 합니다.");
-		assertEquals(4, failCnt.get(), "나머지 4명은 예약 실패해야 합니다.");
+		assertEquals(999, failCnt.get(), "나머지는 예약 실패해야 합니다.");
 	}
 }
