@@ -50,7 +50,7 @@ public class PaymentService {
             return payment;
 
         } catch (FailException e) {
-            log.warn("결제가 실패했습니다. reservation ID : {}", reservation.getId());
+            log.error("결제가 실패했습니다. reservation ID : {}", reservation.getId());
             // 예약 상태 실패로 변환
             reservation.changeStatus(ReservationStatus.FAILED);
             // 좌석 예약 가능 상태로 변환
