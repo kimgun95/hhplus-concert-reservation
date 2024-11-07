@@ -1,4 +1,4 @@
-## 동시성 이슈 파악 및 제어 방식 도입
+step13: [합리적으로 캐시를 사용할 수 있는 곳은 어디 있을까?](https://obtainable-poppyseed-72e.notion.site/137e810ff43e80b09731fa043a49ee46)
 
 ---
 
