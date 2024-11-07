@@ -36,7 +36,7 @@ dependencies {
 	runtimeOnly 'com.h2database:h2:2.2.224'
 	testImplementation 'com.h2database:h2:2.2.224'
 	implementation 'org.springframework.boot:spring-boot-starter-security'
-//	implementation 'org.redisson:redisson-spring-boot-starter:3.24.3'
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 }
 
 tasks.named('test') {

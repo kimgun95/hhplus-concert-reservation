@@ -6,8 +6,6 @@ import hhplus.concertreservation.app.domain.constant.ReservationStatus;
 import hhplus.concertreservation.app.domain.constant.SeatStatus;
 import hhplus.concertreservation.app.domain.entity.*;
 import hhplus.concertreservation.app.domain.repository.*;
-import hhplus.concertreservation.config.exception.ErrorCode;
-import hhplus.concertreservation.config.exception.FailException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -16,7 +14,8 @@ import org.mockito.MockitoAnnotations;
 
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -29,7 +28,6 @@ class PaymentServiceTest {
     @Mock private LedgerRepository ledgerRepository;
     @Mock private ReservationRepository reservationRepository;
     @Mock private SeatRepository seatRepository;
-    @Mock private QueueRepository queueRepository;
     @Mock private UserRepository userRepository;
 
     @BeforeEach
@@ -44,7 +42,7 @@ class PaymentServiceTest {
         Long userId = 1L;
         Long seatId = 1L;
 
-        Queue queue = Queue.create(userId);
+        QueueToken queueToken = QueueToken.create(userId);
         User user = User.builder()
                 .id(userId)
                 .userName("Hong")
@@ -54,7 +52,6 @@ class PaymentServiceTest {
         reservation.changeStatus(ReservationStatus.PENDING);
 
         when(reservationRepository.findById(reservationId)).thenReturn(Optional.of(reservation));
-        when(queueRepository.findByUserId(userId)).thenReturn(Optional.of(queue));
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
         when(paymentRepository.save(any(Payment.class))).thenAnswer(invocation -> invocation.getArgument(0));
         when(ledgerRepository.save(any(Ledger.class))).thenAnswer(invocation -> invocation.getArgument(0));
@@ -88,7 +85,6 @@ class PaymentServiceTest {
 
         when(reservationRepository.findById(reservationId)).thenReturn(Optional.of(reservation));
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
-        when(queueRepository.findByUserId(userId)).thenThrow(new FailException(ErrorCode.EXPIRED_QUEUE_TOKEN));
 
         when(seatRepository.findById(seatId)).thenReturn(Optional.of(seat));
 

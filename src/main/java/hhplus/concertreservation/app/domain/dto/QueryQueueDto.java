@@ -1,12 +1,12 @@
 package hhplus.concertreservation.app.domain.dto;
 
-import hhplus.concertreservation.app.domain.entity.Queue;
+import hhplus.concertreservation.app.domain.entity.QueueToken;
 
 public record QueryQueueDto(
-        Queue queue,
+        QueueToken queueToken,
         Long queueCount
 ) {
-    public static QueryQueueDto of(Queue queue, Long queueCount) {
-        return new QueryQueueDto(queue, queueCount);
+    public static QueryQueueDto of(QueueToken queueToken, Long queueCount) {
+        return new QueryQueueDto(queueToken, queueCount);
     }
 }

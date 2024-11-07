@@ -58,7 +58,7 @@ public class ConcertreservationApplicationTests {
 			executorService.submit(() -> {
 				try {
 					// 유저 대기열 토큰 발급
-					queueService.getQueue(userId);
+					queueService.issueToken(userId);
 					// 좌석 예약 시도
 					Reservation reservation = reservationService.reserveSeat(userId, concertId, seatNumber);
 					// 결제 시도

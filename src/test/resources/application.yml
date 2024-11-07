@@ -31,3 +31,8 @@ spring:
       password:
       schema-locations: classpath:ddl.sql
       data-locations: classpath:data.sql
+
+  data:
+    redis:
+      host: localhost
+      port: 6379

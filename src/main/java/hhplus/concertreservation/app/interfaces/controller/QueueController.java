@@ -1,8 +1,8 @@
 package hhplus.concertreservation.app.interfaces.controller;
 
 import hhplus.concertreservation.app.application.service.QueueService;
+import hhplus.concertreservation.app.domain.dto.QueueRank;
 import hhplus.concertreservation.app.interfaces.response.IssueQueueResponse;
-import hhplus.concertreservation.app.interfaces.response.QueryQueueResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,15 +19,15 @@ public class QueueController {
             @RequestParam("userId") Long userId
     ) {
         return ResponseEntity.status(HttpStatus.OK)
-                .body(IssueQueueResponse.from(queueService.getQueue(userId)));
+                .body(IssueQueueResponse.from(queueService.issueToken(userId)));
     }
 
     @GetMapping("/queue/query")
-    public ResponseEntity<QueryQueueResponse> queryQueueToken(
+    public ResponseEntity<QueueRank> queryQueueToken(
             @RequestHeader("AuthorizationQueue") String token
     ) {
         return ResponseEntity.status(HttpStatus.OK)
-                .body(QueryQueueResponse.from(queueService.queryQueue(token)));
+                .body(queueService.queryToken(token));
     }
 
 }
