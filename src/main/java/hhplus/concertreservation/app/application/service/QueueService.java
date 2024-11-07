@@ -26,11 +26,8 @@ public class QueueService {
     private static final String WAITING_QUEUE_KEY = "waiting:queue";  // ZSet
     private static final String ACTIVE_QUEUE_KEY = "active:queue";    // Set
     private static final int BATCH_SIZE = 100;  // 한 번에 활성화할 토큰 수
-    private static final long TOKEN_TTL = 60L; // 활성화된 토큰 유효시간 30분
+    private static final long TOKEN_TTL = 60L;
 
-    /**
-     * 대기열 토큰 발급
-     */
     public QueueToken issueToken(Long userId) {
         // 기존 토큰이 있는지 확인
         String existingToken = findTokenByUserId(userId);
@@ -54,9 +51,6 @@ public class QueueService {
         }
     }
 
-    /**
-     * 대기열 상태 조회
-     */
     public QueueRank queryToken(String token) {
         // Active Set에서 먼저 확인
         Boolean isActive = redisTemplate.opsForSet().isMember(
@@ -77,9 +71,6 @@ public class QueueService {
         throw new FailException(ErrorCode.EXPIRED_QUEUE_TOKEN);
     }
 
-    /**
-     * 대기열 -> 활성 상태로 전환 (스케줄러)
-     */
     @Scheduled(fixedRate = 10000) // 10초마다 실행
     public void processWaitingQueue() {
         // 현재 활성 토큰 수 확인
@@ -123,9 +114,6 @@ public class QueueService {
         }
     }
 
-    /**
-     * UserId로 토큰 찾기
-     */
     private String findTokenByUserId(Long userId) {
         Set<String> tokens = redisTemplate.opsForZSet().range(
                 WAITING_QUEUE_KEY,
