@@ -9,8 +9,7 @@ CREATE TABLE seat (
                               seat_id BIGINT AUTO_INCREMENT PRIMARY KEY,
                               concert_id BIGINT,
                               seat_number BIGINT,
-                              seat_status VARCHAR(10),
-                            version bigint
+                              seat_status VARCHAR(10)
 );
 
 CREATE TABLE reservation (
