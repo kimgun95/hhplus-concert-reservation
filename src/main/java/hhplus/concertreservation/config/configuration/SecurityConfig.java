@@ -1,7 +1,8 @@
-package hhplus.concertreservation.config;
+package hhplus.concertreservation.config.configuration;
 
 import hhplus.concertreservation.app.domain.checker.QueueChecker;
 import hhplus.concertreservation.app.domain.repository.QueueRepository;
+import hhplus.concertreservation.config.filter.QueueAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

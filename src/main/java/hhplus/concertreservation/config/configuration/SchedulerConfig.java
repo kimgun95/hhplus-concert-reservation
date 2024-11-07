@@ -1,4 +1,4 @@
-package hhplus.concertreservation.config;
+package hhplus.concertreservation.config.configuration;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;

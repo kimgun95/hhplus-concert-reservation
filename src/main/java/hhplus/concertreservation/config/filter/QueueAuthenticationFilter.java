@@ -1,4 +1,4 @@
-package hhplus.concertreservation.config;
+package hhplus.concertreservation.config.filter;
 
 import hhplus.concertreservation.app.domain.checker.QueueChecker;
 import hhplus.concertreservation.app.domain.entity.Queue;
