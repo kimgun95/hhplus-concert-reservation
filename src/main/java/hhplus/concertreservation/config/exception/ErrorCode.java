@@ -16,7 +16,7 @@ public enum ErrorCode {
     RESERVATION_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 예약입니다."),
     PAYMENT_FAILED(HttpStatus.CONFLICT, "결제가 실패했습니다."),
     INVALID_QUEUE_STATUS(HttpStatus.UNAUTHORIZED, "API 요청이 가능한 대기열 상태가 아닙니다."),
-    LOCK_POSSESSION_FAILED(HttpStatus.CONFLICT, "Redis Lock 점유에 실패했습니다."),
+    CONFLICT_TOKEN_ERROR(HttpStatus.CONFLICT, "토큰 에러가 발생했습니다."),
     ;
 
     private final HttpStatus httpStatus;

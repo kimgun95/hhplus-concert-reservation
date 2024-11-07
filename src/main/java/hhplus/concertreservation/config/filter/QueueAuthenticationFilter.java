@@ -1,8 +1,9 @@
 package hhplus.concertreservation.config.filter;
 
-import hhplus.concertreservation.app.domain.checker.QueueChecker;
-import hhplus.concertreservation.app.domain.entity.Queue;
-import hhplus.concertreservation.app.domain.repository.QueueRepository;
+import hhplus.concertreservation.app.application.service.QueueService;
+import hhplus.concertreservation.app.domain.constant.QueueStatus;
+import hhplus.concertreservation.app.domain.dto.QueueRank;
+import hhplus.concertreservation.config.exception.ErrorCode;
 import hhplus.concertreservation.config.exception.FailException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -19,10 +20,9 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class QueueAuthenticationFilter extends OncePerRequestFilter {
 
-    private final QueueRepository queueRepository;
-    private final QueueChecker queueChecker;
     private final AntPathMatcher pathMatcher = new AntPathMatcher();
     private String filterProcessesUrl = "/seat/**";
+    private final QueueService queueService;
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
@@ -40,10 +40,9 @@ public class QueueAuthenticationFilter extends OncePerRequestFilter {
         log.info("대기열 인증 토큰의 헤더값: {}", token);
 
         try {
-            Queue queue = queueChecker.getOrThrowIfNotFound(queueRepository.findByToken(token));
-            queueChecker.checkActiveOrThrow(queue);
+            QueueRank rank = queueService.queryToken(token);
+            if (rank.getRank().equals(QueueStatus.WAITING)) throw new FailException(ErrorCode.CONFLICT_TOKEN_ERROR);
 
-            filterChain.doFilter(request, response);
         } catch (FailException e) {
             log.info("대기열 인증 토큰이 없거나 대기열 순번이 아닙니다: {}", token);
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);

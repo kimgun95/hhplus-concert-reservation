@@ -1,7 +1,6 @@
 package hhplus.concertreservation.config.configuration;
 
-import hhplus.concertreservation.app.domain.checker.QueueChecker;
-import hhplus.concertreservation.app.domain.repository.QueueRepository;
+import hhplus.concertreservation.app.application.service.QueueService;
 import hhplus.concertreservation.config.filter.QueueAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -18,8 +17,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final QueueRepository queueRepository;
-    private final QueueChecker queueChecker;
+    private final QueueService queueService;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -40,6 +38,6 @@ public class SecurityConfig {
 
     @Bean
     public QueueAuthenticationFilter queueAuthenticationFilter() {
-        return new QueueAuthenticationFilter(queueRepository, queueChecker);
+        return new QueueAuthenticationFilter(queueService);
     }
 }

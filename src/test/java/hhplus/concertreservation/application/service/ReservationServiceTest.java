@@ -3,10 +3,9 @@ package hhplus.concertreservation.application.service;
 import hhplus.concertreservation.app.application.service.ReservationService;
 import hhplus.concertreservation.app.domain.constant.ReservationStatus;
 import hhplus.concertreservation.app.domain.constant.SeatStatus;
-import hhplus.concertreservation.app.domain.entity.Queue;
+import hhplus.concertreservation.app.domain.entity.QueueToken;
 import hhplus.concertreservation.app.domain.entity.Reservation;
 import hhplus.concertreservation.app.domain.entity.Seat;
-import hhplus.concertreservation.app.domain.repository.QueueRepository;
 import hhplus.concertreservation.app.domain.repository.ReservationRepository;
 import hhplus.concertreservation.app.domain.repository.SeatRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,8 +32,6 @@ class ReservationServiceTest {
     @Mock
     private SeatRepository seatRepository;
 
-    @Mock
-    private QueueRepository queueRepository;
 
     @BeforeEach
     void setUp() {
@@ -47,7 +44,7 @@ class ReservationServiceTest {
         Long seatNumber = 1L;
         Long userId = 1L;
 
-        Queue queue = Queue.create(userId);
+        QueueToken queueToken = QueueToken.create(userId);
         Seat seat = Seat.builder()
                 .id(1L)
                 .concertId(concertId)
@@ -56,7 +53,6 @@ class ReservationServiceTest {
                 .build();
 
         when(seatRepository.findByConcertIdAndSeatNumber(concertId, seatNumber)).thenReturn(Optional.of(seat));
-        when(queueRepository.findByUserId(userId)).thenReturn(Optional.of(queue));
         when(reservationRepository.save(any(Reservation.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         Reservation result = sut.reserveSeat(userId, concertId, seatNumber);
@@ -92,7 +88,6 @@ class ReservationServiceTest {
         Seat seat = new Seat();
 
         when(seatRepository.findByConcertIdAndSeatNumber(concertId, seatNumber)).thenReturn(Optional.of(seat));
-        when(queueRepository.findByUserId(userId)).thenThrow(new RuntimeException("대기열을 찾을 수 없습니다"));
 
         assertThrows(RuntimeException.class, () -> {
             sut.reserveSeat(userId, concertId, seatNumber);

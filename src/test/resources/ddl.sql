@@ -25,7 +25,7 @@ CREATE TABLE users (
                       user_name VARCHAR(30)
 );
 
-CREATE TABLE queue (
+CREATE TABLE queueToken (
                             queue_id BIGINT AUTO_INCREMENT PRIMARY KEY,
                             user_id BIGINT,
                             token VARCHAR(255),
