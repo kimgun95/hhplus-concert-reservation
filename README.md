@@ -1,6 +1,6 @@
-step13: [합리적으로 캐시를 사용할 수 있는 곳은 어디 있을까?](https://obtainable-poppyseed-72e.notion.site/137e810ff43e80b09731fa043a49ee46)
+step15: [간단한 쿼리도 인덱스를 통해 성능 개선이 가능할까?](https://obtainable-poppyseed-72e.notion.site/13ee810ff43e80a6af41db84354b05b4)
 
----
+노션: [합리적으로 캐시를 사용할 수 있는 곳은 어디 있을까?](https://obtainable-poppyseed-72e.notion.site/137e810ff43e80b09731fa043a49ee46)
 
 노션: [좌석 예약에 대한 동시성 처리 테스트](https://obtainable-poppyseed-72e.notion.site/130e810ff43e80a5a564eec52b3e16a8?pvs=4)
 
